@@ -36,7 +36,7 @@ public class Writer {
 
         String str = c.readLine("Input your test string: ");
 
-        MemoryRegion<Transactional> mr = h.allocateMemoryRegion(Transactional.class, Integer.BYTES + str.length());
+        MemoryRegion mr = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, Integer.BYTES + str.length());
         byte[] bytes = str.getBytes();
         mr.putInt(0, str.length());
         for (int i = 0; i < str.length(); i++) {
