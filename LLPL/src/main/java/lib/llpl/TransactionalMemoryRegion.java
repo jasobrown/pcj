@@ -21,7 +21,7 @@
 
 package lib.llpl;
 
-public class TransactionalMemoryRegion extends AbstractMemoryRegion<Transactional> {
+public class TransactionalMemoryRegion extends AbstractMemoryRegion {
     private static final long METADATA_SIZE = 8;
 
     TransactionalMemoryRegion(Heap h, long x, boolean isAddr) {
@@ -70,7 +70,7 @@ public class TransactionalMemoryRegion extends AbstractMemoryRegion<Transactiona
     }
 
     @Override
-    public void copyFromMemory(MemoryRegion<?> srcRegion, long srcOffset, long dstOffset, long length) {
+    public void copyFromMemory(MemoryRegion srcRegion, long srcOffset, long dstOffset, long length) {
         if (nativeMemoryRegionMemcpyTransactional(srcRegion.addr(), srcRegion.baseOffset() + srcOffset, addr(), baseOffset() + dstOffset, length) != 0)
             throw new PersistenceException("Failed to copy from MemoryRegion!");
     }

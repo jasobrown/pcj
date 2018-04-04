@@ -24,7 +24,7 @@ package lib.llpl;
 class TransactionalMemoryRegionTest {
     public static void main(String[] args) {
         Heap h = Heap.getHeap("/mnt/mem/persistent_pool", 2147483648L);
-        MemoryRegion<?> reg = h.allocateMemoryRegion(Transactional.class, 16);
+        MemoryRegion reg = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 16);
 
         reg.putByte(0, (byte)5);
         assert(reg.getByte(0) == (byte)5);

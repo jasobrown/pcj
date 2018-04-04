@@ -52,26 +52,26 @@ public class IntArray {
     }
 
     private static Heap h = Heap.getHeap("/mnt/mem/persistent_pool", 2147483648L);
-    MemoryRegion<Flushable> region;
+    MemoryRegion region;
 
-    public static IntArray fromAddress(long addr) {
-        MemoryRegion<Flushable> region = h.memoryRegionFromAddress(Flushable.class, addr);
-        if (!region.isFlushed()) {     // simple consistency scheme: if not consistent, throw away, return null
-            h.freeMemoryRegion(region);
-            return null;
-        } else {
-            return new IntArray(region);
-        }
-    }
+//    public static IntArray fromAddress(long addr) {
+//        MemoryRegion<Flushable> region = h.memoryRegionFromAddress(Flushable.class, addr);
+//        if (!region.isFlushed()) {     // simple consistency scheme: if not consistent, throw away, return null
+//            h.freeMemoryRegion(region);
+//            return null;
+//        } else {
+//            return new IntArray(region);
+//        }
+//    }
 
     public IntArray(int size) {
-        this.region = (MemoryRegion<Flushable>)h.allocateMemoryRegion(Flushable.class, HEADER_SIZE + Integer.BYTES * size);
+        this.region = (MemoryRegion)h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, HEADER_SIZE + Integer.BYTES * size);
         this.region.putInt(0, size);
     }
 
-    private IntArray(MemoryRegion<Flushable> region) {
-        this.region = region;
-    }
+//    private IntArray(MemoryRegion<Flushable> region) {
+//        this.region = region;
+//    }
 
     public void set(int index, int value) {
         if (index < 0 || index >= size()) {
@@ -92,7 +92,7 @@ public class IntArray {
         return region.getInt(0);
     }
 
-    public long addr() {
-        return region.addr();
-    }
+//    public long addr() {
+//        return region.addr();
+//    }
 }

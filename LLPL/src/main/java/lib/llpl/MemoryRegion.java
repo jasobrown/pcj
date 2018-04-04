@@ -21,12 +21,13 @@
 
 package lib.llpl;
 
-public interface MemoryRegion<K extends MemoryRegion.Kind> {
+public interface MemoryRegion {
     int MODE_R  = (1 << 0);
     int MODE_W  = (1 << 1);
     int MODE_RW = MODE_R | MODE_W;
 
-    public interface Kind {}
+    public enum Kind { RAW, TRANSACTIONAL, FLUSHABLE }
+
 
     void checkAccess(int mode);
     void checkAlive();
@@ -48,7 +49,7 @@ public interface MemoryRegion<K extends MemoryRegion.Kind> {
     long size();
     void flush() throws UnsupportedOperationException;
     boolean isFlushed() throws UnsupportedOperationException;
-    void copyFromMemory(MemoryRegion<?> srcRegion, long srcOffset, long dstOffset, long length);
+    void copyFromMemory(MemoryRegion srcRegion, long srcOffset, long dstOffset, long length);
     void copyFromArray(byte[] srcArray, int srcOffset, long dstOffset, int length);
     void setMemory(byte val, long offset, long length);
     long baseOffset();

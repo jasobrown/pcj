@@ -24,11 +24,11 @@ package lib.llpl;
 class FlushableMemoryRegionTest {
     public static void main(String[] args) {
         Heap h = Heap.getHeap("/mnt/mem/persistent_pool", 2147483648L);
-        FlushableMemoryRegion reg = (FlushableMemoryRegion)h.allocateMemoryRegion(Flushable.class, 16);
+        FlushableMemoryRegion reg = (FlushableMemoryRegion)h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, 16);
 
         reg.putByte(0, (byte)5);
         assert(reg.isFlushed() == false);
-        FlushableMemoryRegion reg2 = (FlushableMemoryRegion)h.memoryRegionFromAddress(Flushable.class, reg.addr());
+        FlushableMemoryRegion reg2 = (FlushableMemoryRegion)h.memoryRegionFromAddress(MemoryRegion.Kind.FLUSHABLE, reg.addr());
         assert(reg2.isFlushed() == false);
         reg.flush();
         assert(reg.isFlushed() == true);

@@ -21,8 +21,8 @@
 
 package lib.llpl;
 
-import java.util.HashMap;
 import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
 
 import sun.misc.Unsafe;
 
@@ -41,7 +41,7 @@ public class Heap {
     }
 
     static Unsafe UNSAFE;
-    private static HashMap<String, Heap> heaps = new HashMap<>();
+    private static ConcurrentHashMap<String, Heap> heaps = new ConcurrentHashMap<>();
 
     public synchronized static Heap getHeap(String path, long size) {
         Heap heap;
@@ -58,7 +58,6 @@ public class Heap {
     private String path;
 
     private Heap(String path, long size) {
-        if (open) return;
         this.path = path;
         this.open = true;
         nativeOpenHeap(path, size);
@@ -70,48 +69,54 @@ public class Heap {
     }
 
     @SuppressWarnings("unchecked")
-    public <K extends MemoryRegion.Kind> MemoryRegion<K> allocateMemoryRegion(Class<K> kind, long size) {
-        if (kind == Raw.class)
-            return (MemoryRegion<K>)new RawMemoryRegion(this, size, false);
-        else if (kind == Flushable.class)
-            return (MemoryRegion<K>)new FlushableMemoryRegion(this, size, false);
-        else if (kind == Transactional.class)
-            return (MemoryRegion<K>)new TransactionalMemoryRegion(this, size, false);
-        else throw new IllegalArgumentException("Kind must be one of Raw, Flushable, or Transactional!");
+    public MemoryRegion allocateMemoryRegion(MemoryRegion.Kind kind, long size) {
+        switch (kind) {
+            case RAW:
+                return new RawMemoryRegion(this, size, false);
+            case FLUSHABLE:
+                new FlushableMemoryRegion(this, size, false);
+            case TRANSACTIONAL:
+                new TransactionalMemoryRegion(this, size, false);
+            default:
+                throw new IllegalArgumentException("Kind must be one of Raw, Flushable, or Transactional!");
+        }
     }
 
     @SuppressWarnings("unchecked")
-    public <K extends MemoryRegion.Kind> MemoryRegion<K> memoryRegionFromAddress(Class<K> kind, long addr) {
-        if (kind == Raw.class)
-            return (MemoryRegion<K>)new RawMemoryRegion(this, addr, true);
-        else if (kind == Flushable.class)
-            return (MemoryRegion<K>)new FlushableMemoryRegion(this, addr, true);
-        else if (kind == Transactional.class)
-            return (MemoryRegion<K>)new TransactionalMemoryRegion(this, addr, true);
-        else throw new IllegalArgumentException("Kind must be one of Raw, Flushable, or Transactional!");
+    public MemoryRegion memoryRegionFromAddress(MemoryRegion.Kind kind, long addr) {
+        switch (kind) {
+            case RAW:
+                return new RawMemoryRegion(this, addr, true);
+            case FLUSHABLE:
+                new FlushableMemoryRegion(this, addr, true);
+            case TRANSACTIONAL:
+                new TransactionalMemoryRegion(this, addr, true);
+            default:
+                throw new IllegalArgumentException("Kind must be one of Raw, Flushable, or Transactional!");
+        }
     }
 
     @SuppressWarnings("unchecked")
-    public <K extends MemoryRegion.Kind> MemoryRegion<K> reallocateMemoryRegion(Class<K> kind, MemoryRegion<K> region, long newSize) {
+    public MemoryRegion reallocateMemoryRegion(MemoryRegion.Kind kind, MemoryRegion region, long newSize) {
         if (newSize == 0) {
             freeMemoryRegion(region);
             return null;
         }
 
         try {
-            MemoryRegion<?>[] ret = new MemoryRegion[1];
+            MemoryRegion[] ret = new MemoryRegion[1];
             Transaction.run(() -> {
                 ret[0] = allocateMemoryRegion(kind, newSize);
                 ret[0].copyFromMemory(region, 0, 0, Math.min(newSize, region.size()));
                 if (region != null) freeMemoryRegion(region);
             });
-            return (MemoryRegion<K>)ret[0];
+            return ret[0];
         } catch (Exception e) {
             throw new PersistenceException("Failed to reallocate MemoryRegion of size " + newSize + "!");
         }
     }
 
-    public void freeMemoryRegion(MemoryRegion<?> region) {
+    public void freeMemoryRegion(MemoryRegion region) {
         if (nativeFree(region.addr()) < 0) {
             throw new PersistenceException("Failed to free region!");
         }
@@ -129,21 +134,21 @@ public class Heap {
         }
     }
 
-    public void copyMemory(MemoryRegion<?> srcRegion, long srcOffset, MemoryRegion<?> dstRegion, long dstOffset, long length) {
+    public void copyMemory(MemoryRegion srcRegion, long srcOffset, MemoryRegion dstRegion, long dstOffset, long length) {
         dstRegion.copyFromMemory(srcRegion, srcOffset, dstOffset, length);
     }
 
-    public void copyToArray(MemoryRegion<?> srcRegion, long srcOffset, byte[] dstArray, int dstOffset, int length) {
+    public void copyToArray(MemoryRegion srcRegion, long srcOffset, byte[] dstArray, int dstOffset, int length) {
         long srcAddress = ((AbstractMemoryRegion)srcRegion).directAddress + srcOffset;
         long dstAddressOffset = UNSAFE.ARRAY_BYTE_BASE_OFFSET + UNSAFE.ARRAY_BYTE_INDEX_SCALE * dstOffset;
         UNSAFE.copyMemory(null, srcAddress, dstArray, dstAddressOffset, length);
     }
 
-    public void copyFromArray(byte[] srcArray, int srcOffset, MemoryRegion<?> dstRegion, long dstOffset, int length) {
+    public void copyFromArray(byte[] srcArray, int srcOffset, MemoryRegion dstRegion, long dstOffset, int length) {
         dstRegion.copyFromArray(srcArray, srcOffset, dstOffset, length);
     }
 
-    public void setMemory(MemoryRegion<?> region, byte val, long offset, long length) {
+    public void setMemory(MemoryRegion region, byte val, long offset, long length) {
         region.setMemory(val, offset, length);
     }
 

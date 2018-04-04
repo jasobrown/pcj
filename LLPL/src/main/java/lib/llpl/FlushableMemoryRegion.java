@@ -28,7 +28,7 @@ import javax.print.DocFlavor.BYTE_ARRAY;
 
 import java.util.Iterator;
 
-class FlushableMemoryRegion extends AbstractMemoryRegion<Flushable> {
+class FlushableMemoryRegion extends AbstractMemoryRegion {
     private static final long FLUSH_FLAG_OFFSET = 8;    // store the flushed flag as an int at the 8th offset, real data starts at offset 12
     private static final long FLUSH_FLAG_LENGTH = 4;    // flushed flag is an int
     private static final long METADATA_SIZE = 12;
@@ -114,7 +114,7 @@ class FlushableMemoryRegion extends AbstractMemoryRegion<Flushable> {
     }
 
     @Override
-    public void copyFromMemory(MemoryRegion<?> srcRegion, long srcOffset, long dstOffset, long length) {
+    public void copyFromMemory(MemoryRegion srcRegion, long srcOffset, long dstOffset, long length) {
         markDirty();
         nativeMemoryRegionMemcpyRaw(srcRegion.addr(), srcRegion.baseOffset() + srcOffset, addr(), baseOffset() + dstOffset, length);
         addToMemoryRanges(dstOffset, length);

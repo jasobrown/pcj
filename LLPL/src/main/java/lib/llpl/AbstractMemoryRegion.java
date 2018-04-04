@@ -21,7 +21,7 @@
 
 package lib.llpl;
 
-abstract class AbstractMemoryRegion<K extends MemoryRegion.Kind> implements MemoryRegion<K>, Comparable<AbstractMemoryRegion<K>> {
+abstract class AbstractMemoryRegion implements MemoryRegion, Comparable<AbstractMemoryRegion> {
     protected static final long SIZE_OFFSET = 0;
 
     protected long size;

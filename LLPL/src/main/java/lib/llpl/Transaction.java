@@ -26,6 +26,7 @@ public class Transaction {
         System.loadLibrary("llpl");
     }
 
+    @FunctionalInterface
     public interface Update {
         public void run();
     }

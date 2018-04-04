@@ -32,9 +32,9 @@ public class MemoryRegionArray {
         for (int i = 0; i < size; i++) {
             assert(mra.get(i) == null);
         }
-        MemoryRegion<Transactional> mr1 = h.allocateMemoryRegion(Transactional.class, 10);
+        MemoryRegion mr1 = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 10);
         mr1.putLong(0, 0xcafe);
-        MemoryRegion<Transactional> mr2 = h.allocateMemoryRegion(Transactional.class, 20);
+        MemoryRegion mr2 = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 20);
         mr2.putLong(0, 0xbeef);
 
         mra.set(5, mr1);
@@ -49,7 +49,7 @@ public class MemoryRegionArray {
         assert(mra.size() == 10);
         boolean caught = false;
         try {
-            mra.set(10, h.allocateMemoryRegion(Transactional.class, 5));
+            mra.set(10, h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 5));
         } catch (ArrayIndexOutOfBoundsException e) {
             caught = true;
         }
@@ -57,42 +57,42 @@ public class MemoryRegionArray {
     }
 
     private static Heap h = Heap.getHeap("/mnt/mem/persistent_pool", 2147483648L);
-    MemoryRegion<Transactional> region;
+    MemoryRegion region;
 
-    public static MemoryRegionArray fromAddress(long addr) {
-        MemoryRegion<Transactional> region = h.memoryRegionFromAddress(Transactional.class, addr);
-        return new MemoryRegionArray(region);
-    }
+//    public static MemoryRegionArray fromAddress(long addr) {
+//        MemoryRegion<Transactional> region = h.memoryRegionFromAddress(Transactional.class, addr);
+//        return new MemoryRegionArray(region);
+//    }
 
     public MemoryRegionArray(int size) {
-        this.region = h.allocateMemoryRegion(Transactional.class, HEADER_SIZE + Long.BYTES * size);
+        this.region = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, HEADER_SIZE + Long.BYTES * size);
         this.region.putInt(0, size);
     }
 
-    private MemoryRegionArray(MemoryRegion<Transactional> region) {
-        this.region = region;
-    }
+//    private MemoryRegionArray(MemoryRegion<Transactional> region) {
+//        this.region = region;
+//    }
 
-    public void set(int index, MemoryRegion<Transactional> value) {
+    public void set(int index, MemoryRegion value) {
         if (index < 0 || index >= size()) {
             throw new ArrayIndexOutOfBoundsException();
         }
         region.putLong(HEADER_SIZE + Long.BYTES * index, value == null ? 0 : value.addr());
     }
 
-    public MemoryRegion<Transactional> get(int index) {
+    public MemoryRegion get(int index) {
         if (index < 0 || index >= size()) {
             throw new ArrayIndexOutOfBoundsException();
         }
         long addr = region.getInt(HEADER_SIZE + Long.BYTES * index);
-        return addr == 0 ? null : h.memoryRegionFromAddress(Transactional.class, addr);
+        return addr == 0 ? null : h.memoryRegionFromAddress(MemoryRegion.Kind.TRANSACTIONAL, addr);
     }
 
     public int size() {
         return region.getInt(0);
     }
 
-    public long addr() {
-        return region.addr();
-    }
+//    public long addr() {
+//        return region.addr();
+//    }
 }

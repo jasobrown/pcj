@@ -28,20 +28,20 @@ import java.util.TreeMap;
 class MemoryRegionEqualityTest {
     public static void main(String[] args) {
         Heap h = Heap.getHeap("/mnt/mem/persistent_pool", 2147483648L);
-        MemoryRegion<?> mr = h.allocateMemoryRegion(Raw.class, 10);
+        MemoryRegion mr = h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 10);
         assert(mr.addr() != 0);
-        MemoryRegion<?> mr2 = h.memoryRegionFromAddress(Raw.class, mr.addr());
+        MemoryRegion mr2 = h.memoryRegionFromAddress(MemoryRegion.Kind.RAW, mr.addr());
         assert(mr.addr() == mr2.addr());
         assert(mr.equals(mr2));
 
-        HashMap<MemoryRegion<?>, Integer> hm = new HashMap<>();
+        HashMap<MemoryRegion, Integer> hm = new HashMap<>();
         assert(hm.size() == 0);
         hm.put(mr, 1);
         hm.put(mr2, 2);
         assert(hm.size() == 1);
         assert(hm.get(mr) == 2);
 
-        TreeMap<MemoryRegion<?>, Integer> tm = new TreeMap<>();
+        TreeMap<MemoryRegion, Integer> tm = new TreeMap<>();
         assert(tm.size() == 0);
         tm.put(mr2, 2);
         tm.put(mr, 1);
@@ -50,9 +50,9 @@ class MemoryRegionEqualityTest {
 
         h.freeMemoryRegion(mr);
 
-        mr = h.allocateMemoryRegion(Flushable.class, 10);
+        mr = h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, 10);
         assert(mr.addr() != 0);
-        mr2 = h.memoryRegionFromAddress(Flushable.class, mr.addr());
+        mr2 = h.memoryRegionFromAddress(MemoryRegion.Kind.FLUSHABLE, mr.addr());
         assert(mr.addr() == mr2.addr());
         assert(mr.equals(mr2));
 
@@ -72,9 +72,9 @@ class MemoryRegionEqualityTest {
 
         h.freeMemoryRegion(mr);
 
-        mr = h.allocateMemoryRegion(Transactional.class, 10);
+        mr = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 10);
         assert(mr.addr() != 0);
-        mr2 = h.memoryRegionFromAddress(Transactional.class, mr.addr());
+        mr2 = h.memoryRegionFromAddress(MemoryRegion.Kind.TRANSACTIONAL, mr.addr());
         assert(mr.addr() == mr2.addr());
         assert(mr.equals(mr2));
 

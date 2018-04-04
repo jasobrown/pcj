@@ -28,38 +28,38 @@ import java.util.TreeMap;
 class MemoryRegionCollectionTest {
     public static void main(String[] args) {
         Heap h = Heap.getHeap("/mnt/mem/persistent_pool", 2147483648L);
-        HashMap<MemoryRegion<?>, Integer> hm = new HashMap<>();
+        HashMap<MemoryRegion, Integer> hm = new HashMap<>();
         for (int i = 0; i < 10; i++) {
-            hm.put(h.allocateMemoryRegion(Raw.class, 10), i);
+            hm.put(h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 10), i);
         }
         assert(hm.size() == 10);
         for (int i = 0; i < 10; i++) {
-            hm.put(h.allocateMemoryRegion(Transactional.class, 10), i);
+            hm.put(h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 10), i);
         }
         assert(hm.size() == 20);
         for (int i = 0; i < 10; i++) {
-            hm.put(h.allocateMemoryRegion(Flushable.class, 10), i);
+            hm.put(h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, 10), i);
         }
         assert(hm.size() == 30);
-        for (Map.Entry<MemoryRegion<?>, Integer> e : hm.entrySet()) {
+        for (Map.Entry<MemoryRegion, Integer> e : hm.entrySet()) {
             // System.out.println(e.getKey().addr() + ", " + e.getKey().getClass() + " --> " + e.getValue());
             h.freeMemoryRegion(e.getKey());
         }
 
-        TreeMap<MemoryRegion<?>, Integer> tm = new TreeMap<>();
+        TreeMap<MemoryRegion, Integer> tm = new TreeMap<>();
         for (int i = 0; i < 10; i++) {
-            tm.put(h.allocateMemoryRegion(Raw.class, 10), i);
+            tm.put(h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 10), i);
         }
         assert(tm.size() == 10);
         for (int i = 0; i < 10; i++) {
-            tm.put(h.allocateMemoryRegion(Transactional.class, 10), i);
+            tm.put(h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 10), i);
         }
         assert(tm.size() == 20);
         for (int i = 0; i < 10; i++) {
-            tm.put(h.allocateMemoryRegion(Flushable.class, 10), i);
+            tm.put(h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, 10), i);
         }
         assert(tm.size() == 30);
-        for (Map.Entry<MemoryRegion<?>, Integer> e : tm.entrySet()) {
+        for (Map.Entry<MemoryRegion, Integer> e : tm.entrySet()) {
             // System.out.println(e.getKey().addr() + ", " + e.getKey().getClass() + " --> " + e.getValue());
             h.freeMemoryRegion(e.getKey());
         }

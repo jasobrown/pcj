@@ -25,25 +25,25 @@ public class ReallocateTest {
     public static void main(String[] args) {
         Heap h = Heap.getHeap("/mnt/mem/persistent_pool2", 2147483648L);
 
-        MemoryRegion<Raw> mr = h.allocateMemoryRegion(Raw.class, 500000000L);
+        MemoryRegion mr = h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 500000000L);
         mr.putByte(1000000, (byte)0x50);
-        mr = h.reallocateMemoryRegion(Raw.class, mr, 1000000000L);
+        mr = h.reallocateMemoryRegion(MemoryRegion.Kind.RAW, mr, 1000000000L);
         assert(mr.getByte(1000000) == (byte)0x50);
 
         boolean caught = false;
         try {
-            h.reallocateMemoryRegion(Raw.class, mr, 3000000000L);
+            h.reallocateMemoryRegion(MemoryRegion.Kind.RAW, mr, 3000000000L);
         } catch (PersistenceException e) {
             caught = true;
         }
         assert(caught);
 
-        mr = h.reallocateMemoryRegion(Raw.class, mr, 500000000L);
+        mr = h.reallocateMemoryRegion(MemoryRegion.Kind.RAW, mr, 500000000L);
 
-        MemoryRegion<Raw> mr2 = h.allocateMemoryRegion(Raw.class, 1000000000L);
+        MemoryRegion mr2 = h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 1000000000L);
         caught = false;
         try {
-            h.reallocateMemoryRegion(Raw.class, mr2, 1500000000L);
+            h.reallocateMemoryRegion(MemoryRegion.Kind.RAW, mr2, 1500000000L);
         } catch (PersistenceException e) {
             caught = true;
         }

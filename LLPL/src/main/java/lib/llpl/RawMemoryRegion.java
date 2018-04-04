@@ -21,7 +21,7 @@
 
 package lib.llpl;
 
-class RawMemoryRegion extends AbstractMemoryRegion<Raw> {
+class RawMemoryRegion extends AbstractMemoryRegion {
     private static final long METADATA_SIZE = 8;
 
     RawMemoryRegion(Heap h, long x, boolean isAddr) {
@@ -35,7 +35,7 @@ class RawMemoryRegion extends AbstractMemoryRegion<Raw> {
     public boolean isFlushed() { throw new UnsupportedOperationException(); }
 
     @Override
-    public void copyFromMemory(MemoryRegion<?> srcRegion, long srcOffset, long dstOffset, long length) {
+    public void copyFromMemory(MemoryRegion srcRegion, long srcOffset, long dstOffset, long length) {
         nativeMemoryRegionMemcpyRaw(srcRegion.addr(), srcRegion.baseOffset() + srcOffset, addr(), baseOffset() + dstOffset, length);
     }
 

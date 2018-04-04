@@ -32,9 +32,9 @@ public class CopyMemoryTest {
     }
 
     static void regionToRegionTest() {
-        MemoryRegion<Raw> rmr = h.allocateMemoryRegion(Raw.class, 120);
-        MemoryRegion<Flushable> fmr = h.allocateMemoryRegion(Flushable.class, 120);
-        MemoryRegion<Transactional> tmr = h.allocateMemoryRegion(Transactional.class, 120);
+        MemoryRegion rmr = h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 120);
+        MemoryRegion fmr = h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, 120);
+        MemoryRegion tmr = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 120);
 
         rmr.putLong(0L, 0x44);
         fmr.putLong(40L, 0x88);
@@ -81,9 +81,9 @@ public class CopyMemoryTest {
     }
 
     static void arrayToRegionTest() {
-        MemoryRegion<Raw> rmr = h.allocateMemoryRegion(Raw.class, 120);
-        MemoryRegion<Flushable> fmr = h.allocateMemoryRegion(Flushable.class, 120);
-        MemoryRegion<Transactional> tmr = h.allocateMemoryRegion(Transactional.class, 120);
+        MemoryRegion rmr = h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 120);
+        MemoryRegion fmr = h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, 120);
+        MemoryRegion tmr = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 120);
         byte[] srcArray = new byte[50];
 
         for (int i = 0; i < srcArray.length; i++) {
@@ -123,9 +123,9 @@ public class CopyMemoryTest {
     }
 
     static void regionToArrayTest() {
-        MemoryRegion<Raw> rmr = h.allocateMemoryRegion(Raw.class, 120);
-        MemoryRegion<Flushable> fmr = h.allocateMemoryRegion(Flushable.class, 120);
-        MemoryRegion<Transactional> tmr = h.allocateMemoryRegion(Transactional.class, 120);
+        MemoryRegion rmr = h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 120);
+        MemoryRegion fmr = h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, 120);
+        MemoryRegion tmr = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 120);
         byte[] dstArray = new byte[50];
 
         rmr.putLong(10L, 0x44);

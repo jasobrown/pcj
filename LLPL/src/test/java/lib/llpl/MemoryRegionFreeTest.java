@@ -24,7 +24,7 @@ package lib.llpl;
 class MemoryRegionFreeTest {
     public static void main(String[] args) {
         Heap h = Heap.getHeap("/mnt/mem/persistent_pool", 2147483648L);
-        MemoryRegion<?> mr = h.allocateMemoryRegion(Raw.class, 10);
+        MemoryRegion mr = h.allocateMemoryRegion(MemoryRegion.Kind.RAW, 10);
         assert(mr.addr() != 0);
         h.freeMemoryRegion(mr);
         assert(mr.addr() == 0);
@@ -36,7 +36,7 @@ class MemoryRegionFreeTest {
         }
         assert(caught);
 
-        mr = h.allocateMemoryRegion(Transactional.class, 10);
+        mr = h.allocateMemoryRegion(MemoryRegion.Kind.TRANSACTIONAL, 10);
         assert(mr.addr() != 0);
         h.freeMemoryRegion(mr);
         assert(mr.addr() == 0);
@@ -48,7 +48,7 @@ class MemoryRegionFreeTest {
         }
         assert(caught);
 
-        mr = h.allocateMemoryRegion(Flushable.class, 10);
+        mr = h.allocateMemoryRegion(MemoryRegion.Kind.FLUSHABLE, 10);
         assert(mr.addr() != 0);
         h.freeMemoryRegion(mr);
         assert(mr.addr() == 0);
